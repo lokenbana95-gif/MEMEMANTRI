@@ -1,0 +1,777 @@
+<!doctype html>
+<html lang="hi">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>MemeMantri — AapKa Apna Meme Mantralaya.</title>
+    <meta
+      name="description"
+      content="India ke Hindi, Hinglish aur desi memes — browser AI voices, Meme FM, voice battles aur Indian satire ke saath."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Grotesk:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="mm1.css" />
+    <!-- Speech narration is browser-native. Socket.IO is loaded only for optional online Meme Adda chat. -->
+  </head>
+  <body>
+    <header>
+      <div class="tricolor-bar"></div>
+      <div class="wrap">
+        <nav>
+          <span class="brand"
+            >Meme<span class="text-tricolor">Mantri</span></span
+          >
+          <div class="links">
+            <button data-jump="community">Meme Sabha</button>
+            <button data-jump="feed">Meme Ministry</button>
+            <button data-jump="radio">Meme FM</button>
+            <button data-jump="battle">Voice Mantri</button>
+            <button data-jump="roast">Roast Arena</button>
+            <button data-jump="parliament">Parliament</button>
+            <button data-jump="generator">Meme Factory</button>
+            <a class="nav-link" href="adda.html">💬 Meme Adda</a>
+            <a class="nav-link" href="global.html">🌍 Global Mantri</a>
+            <button data-jump="submit">Drop Meme</button>
+          </div>
+          <button
+            class="hamburger-btn"
+            id="hamburgerBtn"
+            aria-label="Menu kholo"
+          >
+            ☰
+          </button>
+        </nav>
+      </div>
+      <div class="mobile-backdrop" id="mobileBackdrop"></div>
+      <div class="mobile-drawer" id="mobileDrawer">
+        <div class="mobile-drawer-head">
+          <span class="brand"
+            >Meme<span class="text-tricolor">Mantri</span></span
+          >
+          <button
+            class="mobile-drawer-close"
+            id="mobileDrawerClose"
+            aria-label="Band karo"
+          >
+            ✕
+          </button>
+        </div>
+        <button data-jump="community">Meme Sabha</button>
+        <button data-jump="feed">Meme Ministry</button>
+        <button data-jump="radio">Meme FM</button>
+        <button data-jump="battle">Voice Mantri</button>
+        <button data-jump="roast">Roast Arena</button>
+        <button data-jump="parliament">Parliament</button>
+        <button data-jump="generator">Meme Factory</button>
+        <a href="adda.html">💬 Meme Adda</a>
+        <a href="global.html">🌍 Global Mantri</a>
+        <button data-jump="submit">Drop Meme</button>
+      </div>
+    </header>
+
+    <section class="hero">
+      <div class="floaters" id="floaters" aria-hidden="true"></div>
+      <div class="wrap">
+        <span class="badge glass">Meme FM 69.9 · Sansad se Live</span>
+        <h1>
+          Welcome to MemeMantri<br /><span class="text-tricolor"
+            >Jahan Memes Sirf Dekhe Nahi, Sansad Mein Sunaye Jaate Hain.</span
+          >
+        </h1>
+        <p id="siteTagline">
+          MemeMantri The Official Parliament of Indian Memes
+        </p>
+        <div class="hero-actions">
+          <button class="btn btn-primary" data-jump="feed">
+            Start Laughing
+          </button>
+          <button class="btn btn-green" data-jump="feed">Trending Memes</button>
+          <button class="btn btn-outline-red" data-jump="roast">
+            Political Roast
+          </button>
+          <button class="btn btn-outline-gold" data-jump="battle">
+            AI Voice Battle
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <div class="ticker"><div class="ticker-track" id="ticker"></div></div>
+
+    <section id="community">
+      <div class="wrap">
+        <div class="section-heading-row">
+          <div>
+            <h2>Your Meme Sabha</h2>
+            <p class="sub">
+              Earn karma, build a streak, follow ministries and climb the weekly
+              leaderboard.
+            </p>
+          </div>
+          <span class="live-pill"
+            ><span class="live-dot"></span
+            ><strong id="onlineCount">1</strong> citizens online</span
+          >
+        </div>
+        <div class="community-grid">
+          <div class="glass card profile-card">
+            <div class="profile-top">
+              <div class="avatar-big" id="profileAvatarPreview">😎</div>
+              <div class="profile-name-block">
+                <span class="tag">YOUR CITIZEN PROFILE</span>
+                <h3 id="profileNameDisplay">Meme Citizen</h3>
+                <p class="sub" id="profileRank">Rank loading…</p>
+              </div>
+              <div class="profile-actions">
+                <button class="btn btn-ghost my-submissions-btn" id="mySubmissionsBtn" type="button" aria-expanded="false">
+                  📮 My submissions <span class="submission-count" id="mySubmissionsCount">0</span>
+                </button>
+                <button class="btn btn-ghost" id="openPassportBtn" type="button">
+                  🛂 Meme Passport
+                </button>
+              </div>
+            </div>
+            <div class="profile-stats">
+              <div><strong id="profilePoints">0</strong><span>Karma</span></div>
+              <div>
+                <strong id="profileStreak">1</strong><span>Day streak</span>
+              </div>
+              <div>
+                <strong id="profileBadgesCount">0</strong><span>Badges</span>
+              </div>
+            </div>
+            <div class="profile-forms-group">
+              <div class="profile-form">
+                <input
+                  id="profileNickname"
+                  maxlength="24"
+                  placeholder="Choose a nickname"
+                /><select id="profileAvatar">
+                  <option>😎</option>
+                  <option>😂</option>
+                  <option>🔥</option>
+                  <option>🎤</option>
+                  <option>🏏</option>
+                  <option>👑</option>
+                  <option>🧠</option>
+                  <option>💀</option>
+                  <option>🇮🇳</option>
+                  <option>🚀</option></select
+                ><button class="btn btn-primary" id="saveProfile">
+                  Save profile
+                </button>
+              </div>
+              <p
+                class="profile-message"
+                id="profileMessage"
+                aria-live="polite"
+              ></p>
+              <div class="profile-form department-form">
+                <select id="profileDepartment">
+                  <option value="">🏢 Favourite department: Auto</option>
+                </select
+                ><button class="btn btn-ghost" id="saveDepartment" type="button">
+                  Save department
+                </button>
+              </div>
+              <p
+                class="profile-message"
+                id="departmentMessage"
+                aria-live="polite"
+              ></p>
+            </div>
+            <div class="my-submissions-panel" id="mySubmissionsPanel" hidden>
+              <div class="meta"><span>YOUR MEME PETITIONS</span><span id="mySubmissionsSummary">Loading…</span></div>
+              <div id="mySubmissionsList" class="submission-status-list"></div>
+            </div>
+            <div class="badge-row" id="badgeRow"></div>
+            <div class="referral-box">
+              <strong>Invite your meme squad</strong>
+              <p>
+                Share your referral link. Every new citizen gives you +5 karma.
+              </p>
+              <input id="referralLink" readonly /><button
+                class="btn btn-ghost referral-copy-btn"
+                id="copyReferral"
+              >
+                🔗 Copy invite link
+              </button>
+            </div>
+          </div>
+          <div class="glass card leaderboard-card">
+            <div class="meta">
+              <span>🏆 TOP CITIZENS</span><span>Live karma</span>
+            </div>
+            <h3>Leaderboard</h3>
+            <div id="leaderboardList" class="leaderboard-list">
+              <p class="sub">Loading citizens…</p>
+            </div>
+          </div>
+          <div class="glass card fortune-card">
+            <div class="meta">
+              <span>🔮 MEME FORTUNE TELLER</span><span>Ek click, ek bhavishyavani</span>
+            </div>
+            <h3>Aaj ka Meme Bhavishyavani</h3>
+            <p class="sub">
+              Click karo, ek random meme aur uske saath tumhara aaj ka funny
+              future milega.
+            </p>
+            <button class="btn btn-primary" id="fortuneBtn" type="button">
+              🔮 Aaj ka Meme Bhavishyavani
+            </button>
+            <div id="fortuneResult" class="fortune-result" hidden>
+              <p class="fortune-meme-text" id="fortuneMemeText"></p>
+              <p class="fortune-prediction" id="fortunePrediction"></p>
+            </div>
+          </div>
+          <div class="glass card court-card">
+            <div class="meta">
+              <span>⚖️ MEME COURT</span><span>Public trial in session</span>
+            </div>
+            <h3>Kisi bhi meme ka faisla karo</h3>
+            <p class="sub">
+              Topic ya title se meme search karo, case file karo, aur Sabha
+              ka verdict do.
+            </p>
+            <input
+              id="courtSearchInput"
+              class="court-search-input"
+              placeholder="🔍 Meme search karo (e.g. cricket, office, chai…)"
+              autocomplete="off"
+            />
+            <div id="courtSearchResults" class="court-search-results"></div>
+            <div
+              id="communityCourtBox"
+              class="court-box"
+              hidden
+            ></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="motd">
+      <div class="wrap">
+        <span class="tag">⭐ Meme of the Day</span>
+        <div
+          class="glass card motd-card"
+          id="motdCard"
+          style="margin-top: 14px"
+        ></div>
+      </div>
+    </section>
+
+    <section id="feed">
+      <div class="wrap">
+        <h2>Fresh From Meme Ministry</h2>
+        <p class="sub">
+          Sirf Hindi, Hinglish aur Indian memes. Category aur AI persona voice
+          choose karo.
+        </p>
+        <div class="search-row">
+          <input
+            type="text"
+            id="search"
+            placeholder="🔍 Search memes by title, text or creator..."
+          />
+          <button class="btn btn-ghost" id="savedOnlyBtn" type="button">
+            🔖 Saved memes
+          </button>
+          <button class="btn btn-ghost" id="userPetitionsBtn" type="button">
+            📮 Users petitions
+          </button>
+        </div>
+        <div class="chips" id="chips"></div>
+        <div class="feed-groups" id="feedGroups">
+          <button class="feed-group-tab" data-group="a">🔥 Top Picks</button>
+          <button class="feed-group-tab" data-group="b">🗂 More Memes</button>
+          <button class="feed-group-tab feed-group-hide" data-group="none">
+            ✖ Hide
+          </button>
+        </div>
+        <div class="controls glass">
+          <label>AI Persona Voice</label>
+          <select
+            id="voice"
+            aria-label="Choose a natural narration persona"
+          ></select>
+          <span id="voiceStatus" class="voice-status" role="status"
+            >Loading available voices…</span
+          >
+          <label>Speed <span id="speedVal">1.00</span>×</label>
+          <input
+            type="range"
+            id="speed"
+            min="0.75"
+            max="1.5"
+            step="0.05"
+            value="1"
+          />
+          <button class="btn btn-ghost" id="stopAll">■ Stop</button>
+        </div>
+        <div class="grid" id="memeGrid"></div>
+        <p class="empty-state" id="emptyState" style="display: none">
+          No memes match your search. Try another keyword 🤔
+        </p>
+      </div>
+    </section>
+
+    <section id="radio">
+      <div class="wrap">
+        <h2>Meme FM 69.9</h2>
+        <p class="sub">
+          24×7 live satire broadcast. Sab kaa same station, same waqt — jab bhi
+          tune in karo, wahi chal raha hoga jo abhi "on air" hai.
+        </p>
+        <div class="glass card fm-player" style="margin-top: 22px">
+          <div class="fm-player-top">
+            <div class="fm-onair">
+              <span class="fm-dot" id="fmDot"></span>
+              <span id="fmOnAirLabel">ON AIR</span>
+            </div>
+            <span id="fmSlotLabel" class="fm-slot">Slot 1 / 48</span>
+          </div>
+          <h3 id="fmShowTitle">Sansad Satire</h3>
+          <p class="fm-voice-line" id="fmVoiceLine">📻 Radio Jockey · Male</p>
+          <div class="fm-progress-row">
+            <div class="fm-progress-track">
+              <div class="fm-progress-fill" id="fmProgressFill"></div>
+            </div>
+            <span class="fm-countdown" id="fmCountdown">30:00 left</span>
+          </div>
+          <div
+            style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 16px"
+          >
+            <button class="btn btn-primary" id="fmPlay">▶ Tune In</button>
+            <button class="btn btn-ghost" id="fmNextShow">⏭ Next Show</button>
+          </div>
+          <div class="fm-voice-picker" aria-label="Meme FM voice selection">
+            <span class="fm-picker-label">Voice</span>
+            <span class="fm-voice-btn active">♀ Female RJ</span>
+          </div>
+          <p class="fm-hint">
+            Indian Hinglish delivery · clean line-to-line playback
+          </p>
+          <p class="fm-next-up" id="fmNextUp"></p>
+        </div>
+      </div>
+    </section>
+
+    <section id="battle">
+      <div class="wrap">
+        <h2>🏆 Kaun Banega VoiceMantri?</h2>
+        <p class="sub">
+          Do random users apni marzi ke kisi bhi topic par apna best meme submit
+          karenge. Public vote karegi; 24 hours baad winner declare hoga.
+        </p>
+        <div class="glass card" style="margin-top: 20px">
+          <div class="meta">
+            <span id="battleStatus">Contest loading…</span
+            ><span id="battleCountdown">24:00:00 left</span>
+          </div>
+          <div class="two" style="margin-top: 16px">
+            <input
+              id="battleHandle"
+              type="text"
+              placeholder="Your name / handle e.g. @meme_neta"
+              maxlength="60"
+            />
+            <input
+              id="battleTitle"
+              type="text"
+              placeholder="Your meme title"
+              maxlength="120"
+            />
+          </div>
+          <textarea
+            id="battleSubmissionText"
+            rows="3"
+            placeholder="Apna meme likho — topic aapki choice hai…"
+            maxlength="700"
+            style="
+              width: 100%;
+              margin-top: 10px;
+              box-sizing: border-box;
+              resize: vertical;
+            "
+          ></textarea>
+          <button
+            class="btn btn-primary"
+            id="battleSubmitBtn"
+            style="margin-top: 10px"
+          >
+            📮 Submit My Meme
+          </button>
+          <p
+            id="battleSubmitMsg"
+            class="sub"
+            style="min-height: 20px; margin-top: 10px"
+          ></p>
+        </div>
+        <div class="two" style="margin-top: 20px">
+          <div class="glass card" id="battleCardA">
+            <span class="tag">Meme A</span>
+            <h3 id="battleTitleA">Waiting for first user…</h3>
+            <p id="battleTextA">
+              Pehla user apne choice ke topic par meme submit kar sakta hai.
+            </p>
+            <div class="meta">
+              <span id="battleAuthorA">Open slot</span
+              ><span><strong id="votesA">0</strong> votes</span>
+            </div>
+            <select id="voiceA"></select
+            ><button class="btn btn-primary" data-battle="A" disabled>
+              🔊 Narrate A</button
+            ><button class="btn btn-ghost" data-vote="A" disabled>
+              🗳 Vote A
+            </button>
+          </div>
+          <div class="glass card" id="battleCardB">
+            <span class="tag">Meme B</span>
+            <h3 id="battleTitleB">Waiting for second user…</h3>
+            <p id="battleTextB">
+              Doosra user apne choice ke topic par competing meme submit kar
+              sakta hai.
+            </p>
+            <div class="meta">
+              <span id="battleAuthorB">Open slot</span
+              ><span><strong id="votesB">0</strong> votes</span>
+            </div>
+            <select id="voiceB"></select
+            ><button class="btn btn-green" data-battle="B" disabled>
+              🔊 Narrate B</button
+            ><button class="btn btn-ghost" data-vote="B" disabled>
+              🗳 Vote B
+            </button>
+          </div>
+        </div>
+        <div class="glass card" style="margin-top: 20px">
+          <span class="tag">Today’s VoiceMantri</span>
+          <p id="todayVoiceMantri">
+            Aaj ka winner 24-hour contest ke baad yahan show hoga.
+          </p>
+        </div>
+        <details class="glass card" style="margin-top: 20px">
+          <summary style="cursor: pointer; font-weight: 700">
+            🏛 Retired VoiceMantri
+          </summary>
+          <div id="retiredVoiceMantriList" style="margin-top: 14px">
+            <p class="sub">
+              Abhi koi retired VoiceMantri history available nahi hai.
+            </p>
+          </div>
+        </details>
+      </div>
+    </section>
+
+    <section id="roast">
+      <div class="wrap">
+        <h2>🎤 Democracy Drama</h2>
+        <p class="sub">
+          Equal-opportunity satire. Every party gets roasted, nobody gets hurt.
+        </p>
+        <div class="two" id="arenas"></div>
+      </div>
+    </section>
+
+    <section id="parliament">
+      <div class="wrap">
+        <h2>Meme Parliament</h2>
+
+        <p class="sub">
+          Bharat ka pehla Meme Cabinet. Har ministry internet ke alag-alag dukh,
+          sukh aur comedy crisis ko handle karti hai.
+        </p>
+
+        <div class="ministry-grid">
+          <div class="ministry-card glass">
+            <div class="ministry-icon">😂</div>
+            <h3>Ministry of Laughs</h3>
+            <p>
+              Pure comedy, zero tension. Yahan har meme ka mission hai tumhari
+              boring day ko rescue karna.
+            </p>
+            <span class="minister-tag">OFFICIAL LAUGHTER DEPARTMENT</span>
+          </div>
+
+          <div class="ministry-card glass">
+            <div class="ministry-icon">💀</div>
+            <h3>Ministry of Savage Replies</h3>
+            <p>
+              Internet ke sabse dangerous comebacks yahin approve hote hain. Ek
+              reply aur opponent offline.
+            </p>
+            <span class="minister-tag">COMEBACK AUTHORITY</span>
+          </div>
+
+          <div class="ministry-card glass">
+            <div class="ministry-icon">🔥</div>
+            <h3>Ministry of Roasts</h3>
+            <p>
+              National Roast Investigation Bureau. Har overconfident insaan ki
+              proper public hearing yahin hoti hai.
+            </p>
+            <span class="minister-tag">ROAST CONTROL BOARD</span>
+          </div>
+
+          <div class="ministry-card glass">
+            <div class="ministry-icon">🎮</div>
+            <h3>Ministry of Gaming</h3>
+            <p>
+              Rank push, rage quit aur 2 baje raat ko "bas ek aur match" bolne
+              wale citizens ke liye.
+            </p>
+            <span class="minister-tag">GAMER WELFARE DEPARTMENT</span>
+          </div>
+
+          <div class="ministry-card glass">
+            <div class="ministry-icon">📚</div>
+            <h3>Ministry of Student Suffering</h3>
+            <p>
+              Assignment, attendance, viva aur exam pressure se pareshan
+              students ke adhikaron ki raksha karta hai.
+            </p>
+            <span class="minister-tag">EMOTIONAL DAMAGE CELL</span>
+          </div>
+        </div>
+
+        <div class="parliament-footer glass">
+          <span>🏛 Parliament Status</span>
+          <h3>All 5 Ministries Active</h3>
+          <p>
+            Current National Mood:
+            <strong
+              >😂 High Laughter • 🔥 Moderate Roasting • 💀 Extreme Savage
+              Activity</strong
+            >
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section id="generator">
+      <div class="wrap">
+        <h2>MemeMantri Meme Factory</h2>
+        <p class="sub">
+          Give a topic and a language — get a fresh meme script, narrated
+          instantly.
+        </p>
+        <div class="glass card" style="margin-top: 22px">
+          <input
+            type="text"
+            id="topic"
+            placeholder="Topic e.g. Monday morning traffic"
+          />
+          <select id="lang">
+            <option value="hinglish">Hinglish</option>
+            <option value="english">English</option>
+            <option value="hindi">Hindi</option>
+            <option value="marathi">Marathi</option>
+            <option value="tamil">Tamil</option>
+            <option value="bengali">Bengali</option>
+          </select>
+          <button class="btn btn-primary" id="genBtn">⚡ Generate Meme</button>
+          <p id="genOut" style="min-height: 48px"></p>
+          <button class="btn btn-ghost" id="genPlay" disabled>
+            🔊 Narrate It
+          </button>
+          <button class="btn btn-green" id="genImage" disabled>
+            🖼️ Export Image Meme
+          </button>
+          <div class="template-library glass">
+            <div class="meta">
+              <span>MEME TEMPLATE LIBRARY</span><span>Pick a format</span>
+            </div>
+            <div id="templateLibrary" class="template-grid"></div>
+          </div>
+          <div class="image-factory glass">
+            <div class="meta">
+              <span>IMAGE MEME MAKER</span><span>Live editor</span>
+            </div>
+            <input
+              type="file"
+              id="memeImageUpload"
+              accept="image/png,image/jpeg,image/webp"
+            />
+            <div class="meme-editor-grid">
+              <input
+                type="text"
+                id="imageCaption"
+                maxlength="180"
+                placeholder="Write a caption…"
+              />
+              <select id="captionPosition" aria-label="Caption position">
+                <option value="top">Top</option>
+                <option value="center">Center</option>
+                <option value="bottom" selected>Bottom</option>
+              </select>
+              <label
+                >Font
+                <input
+                  type="range"
+                  id="captionSize"
+                  min="28"
+                  max="100"
+                  value="52"
+              /></label>
+              <label
+                >Outline
+                <input
+                  type="range"
+                  id="captionOutline"
+                  min="0"
+                  max="16"
+                  value="6"
+              /></label>
+            </div>
+            <div class="sticker-row" aria-label="Add sticker">
+              <span>Add sticker:</span
+              ><button type="button" data-sticker="😂">😂</button
+              ><button type="button" data-sticker="🔥">🔥</button
+              ><button type="button" data-sticker="🇮🇳">🇮🇳</button
+              ><button type="button" data-sticker="💀">💀</button
+              ><button type="button" data-sticker="✨">✨</button>
+            </div>
+            <div class="meme-preview-wrap">
+              <canvas id="memePreviewCanvas" width="540" height="540"></canvas
+              ><span id="memePreviewHint">Upload an image to start</span>
+            </div>
+            <div class="editor-actions">
+              <button class="btn btn-green" id="renderImageMeme" disabled>
+                Download image meme</button
+              ><button class="btn btn-ghost" id="clearSticker" type="button">
+                Clear sticker
+              </button>
+            </div>
+            <p id="imageFactoryMessage" class="profile-message"></p>
+          </div>
+          <canvas id="memeCanvas" width="1080" height="1080" hidden></canvas>
+        </div>
+      </div>
+    </section>
+
+    <section id="adda">
+      <div class="wrap">
+        <h2>Meme Adda — Live Online</h2>
+        <p class="sub">
+          Random online chat, meme comparison aur debate ke liye Meme Adda ko
+          alag page par open karo.
+        </p>
+        <div class="glass card" style="margin-top: 22px; text-align: center">
+          <p style="color: var(--muted); max-width: 680px; margin: 0 auto 18px">
+            Alag devices par khule users ko real-time connect karo. Browser
+            notifications, invite accept/reject, live chat, debate mode aur
+            Indian meme sharing available hai.
+          </p>
+          <a class="btn btn-primary" href="adda.html">💬 Open Meme Adda</a>
+        </div>
+      </div>
+    </section>
+
+    <section id="submit">
+      <div class="wrap">
+        <h2>File Your Meme Petition</h2>
+        <p class="sub">
+          Likh do apna meme, MemeMantri ka hissa ban jao. Saved to your
+          MemeMantri citizen profile for admin review. Your submission is not
+          public until approved.
+        </p>
+        <div class="glass card" style="margin-top: 22px">
+          <input type="text" id="subTitle" placeholder="Meme title" />
+          <select id="subCategory"></select>
+          <input
+            type="text"
+            id="subCreator"
+            placeholder="Your handle e.g. @your_name"
+          />
+          <textarea
+            id="subText"
+            rows="3"
+            placeholder="Write your meme text here..."
+            style="resize: vertical"
+          ></textarea>
+          <button class="btn btn-primary" id="subBtn">📮 Submit Meme</button>
+          <p
+            id="subMsg"
+            style="min-height: 24px; font-size: 13px; color: var(--muted)"
+          ></p>
+        </div>
+      </div>
+    </section>
+
+    <footer class="footer-roast">
+      <div class="wrap">
+        <div class="footer-roast-card glass">
+          <span class="footer-tag">🏛 OFFICIAL PARLIAMENT NOTICE</span>
+
+          <h2>Meme Parliament Notice</h2>
+
+          <p>
+            MemeMantri Cabinet ne notice kiya hai ki aap website ke sabse niche
+            tak pahunch gaye hain.
+          </p>
+
+          <div class="footer-reasons">
+            <div class="reason">📌 Aap kuch important dhoondh rahe hain.</div>
+
+            <div class="reason">📌 Aapko abhi tak perfect meme nahi mila.</div>
+
+            <div class="reason">
+              📌 Ya phir aap bas dekhna chahte the ki footer mein kya hai.
+            </div>
+          </div>
+
+          <div class="verdict">
+            <strong>Parliament Verdict:</strong><br />
+            "Citizen is officially too curious." 😂
+          </div>
+
+          <button
+            class="btn btn-primary"
+            onclick="window.scrollTo({ top: 0, behavior: 'smooth' })"
+          >
+            🚀 Return To Parliament
+          </button>
+        </div>
+
+        <div class="footer-bottom-line">
+          🇮🇳 MemeMantri Parliament • All Ministries Active • Extreme Savage
+          Activity Detected 💀
+        </div>
+      </div>
+    </footer>
+    <script src="vendor/socket.io.min.js"></script>
+    <!-- <script
+      src="https://cdn.socket.io/4.7.5/socket.io.min.js"
+      crossorigin="anonymous"
+    ></script> -->
+    <script>
+      window.MEME_CHAT_SERVER_URL =
+        window.MEME_CHAT_SERVER_URL ||
+        (location.protocol === "file:"
+          ? "http://localhost:3000"
+          : location.origin);
+    </script>
+
+    <div class="report-modal-backdrop" id="passportBackdrop" hidden>
+      <div class="report-modal glass passport-modal" role="dialog" aria-modal="true" aria-labelledby="passportTitle">
+        <button class="report-modal-close" id="passportClose" aria-label="Band karo">✕</button>
+        <span class="tag">🛂 MEME PASSPORT</span>
+        <h3 id="passportTitle">Republic of Bakchodi</h3>
+        <div id="passportBody" class="passport-body">
+          <p class="sub">Loading citizen record…</p>
+        </div>
+      </div>
+    </div>
+    <div class="meme-detail-backdrop" id="detailBackdrop" hidden><div class="meme-detail-modal glass" role="dialog" aria-modal="true" aria-labelledby="detailTitle"><button class="report-modal-close" id="detailClose" aria-label="Band karo">✕</button><div id="detailBody"></div></div></div>
+    <div class="report-modal-backdrop" id="reportBackdrop" hidden><div class="report-modal glass" role="dialog" aria-modal="true" aria-labelledby="reportModalTitle"><button class="report-modal-close" id="reportModalClose" aria-label="Band karo">✕</button><span class="tag">⚑ REPORT MEME</span><h3 id="reportModalTitle">Is meme mein kya problem hai?</h3><form id="reportForm"><label>Reason<select name="reason" id="reportReason"><option value="offensive">Offensive content</option><option value="copyright">Copyright issue</option><option value="spam">Spam</option><option value="wrong-category">Wrong category</option><option value="other">Other</option></select></label><label>Details (optional)<textarea name="details" id="reportDetails" maxlength="200" placeholder="Thoda aur bata do…"></textarea></label><div class="form-actions"><button class="btn btn-primary" type="submit" id="reportSubmitBtn">🚩 Submit Report</button><button class="btn btn-ghost" type="button" id="reportCancelBtn">Cancel</button></div><p class="form-status" id="reportStatus" role="status"></p></form></div></div>
+    <script src="share.js"></script>
+    <script src="mm.js"></script>
+    <script src="fm.js"></script>
+    <script src="nav-toggle.js"></script>
+  </body>
+</html>

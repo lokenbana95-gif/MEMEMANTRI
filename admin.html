@@ -1,0 +1,810 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>MemeMantri Admin Panel</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Grotesk:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #0e100f;
+        --card: #181b19;
+        --line: rgba(255, 255, 255, 0.12);
+        --muted: #a8afa9;
+        --orange: #ffad3d;
+        --green: #36bd6b;
+        --red: #ff6b6b;
+        --white: #f7f2e9;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        color: var(--white);
+        background:
+          radial-gradient(
+            circle at 12% 0%,
+            rgba(255, 153, 51, 0.18),
+            transparent 30%
+          ),
+          radial-gradient(
+            circle at 88% 0%,
+            rgba(19, 136, 8, 0.16),
+            transparent 28%
+          ),
+          var(--bg);
+        font-family: "Space Grotesk", sans-serif;
+      }
+      a {
+        color: inherit;
+      }
+      .topline {
+        height: 5px;
+        background: linear-gradient(
+          90deg,
+          #ff8f1f 0 33%,
+          #f6f1e9 33% 66%,
+          #269b45 66%
+        );
+      }
+      header {
+        border-bottom: 1px solid var(--line);
+        background: rgba(10, 11, 10, 0.78);
+        backdrop-filter: blur(12px);
+        position: sticky;
+        top: 0;
+        z-index: 20;
+      }
+      nav {
+        max-width: 1280px;
+        margin: auto;
+        min-height: 62px;
+        padding: 0 20px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 18px;
+        flex-wrap: wrap;
+      }
+      .brand {
+        font-family: "Bebas Neue", sans-serif;
+        font-size: 28px;
+        letter-spacing: 1px;
+        text-decoration: none;
+      }
+      .brand span {
+        color: var(--green);
+      }
+      .navlinks {
+        display: flex;
+        gap: 14px;
+        flex-wrap: wrap;
+        color: var(--muted);
+        font-size: 13px;
+        align-items: center;
+      }
+      .navlinks a {
+        text-decoration: none;
+      }
+      .shell {
+        max-width: 1280px;
+        margin: auto;
+        padding: 36px 20px 70px;
+      }
+      .eyebrow {
+        color: var(--orange);
+        text-transform: uppercase;
+        font-size: 12px;
+        letter-spacing: 2px;
+        font-weight: 700;
+      }
+      h1,
+      h2,
+      h3 {
+        font-family: "Bebas Neue", sans-serif;
+        letter-spacing: 1px;
+        margin: 0;
+      }
+      h1 {
+        font-size: clamp(38px, 6vw, 64px);
+        line-height: 0.95;
+        margin-top: 10px;
+      }
+      h2 {
+        font-size: 24px;
+        margin-bottom: 12px;
+      }
+      h3 {
+        font-size: 18px;
+      }
+      p {
+        color: var(--muted);
+        line-height: 1.5;
+      }
+      .card {
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        background: rgba(24, 27, 25, 0.88);
+        box-shadow: 0 14px 40px rgba(0, 0, 0, 0.18);
+      }
+      .login {
+        max-width: 460px;
+        margin: 30px auto 0;
+        padding: 25px;
+      }
+      label {
+        display: block;
+        color: var(--muted);
+        font-size: 13px;
+        margin: 12px 0 6px;
+      }
+      input,
+      button,
+      select,
+      textarea {
+        font: inherit;
+      }
+      input,
+      select,
+      textarea {
+        width: 100%;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 11px 13px;
+        color: var(--white);
+        background: rgba(0, 0, 0, 0.24);
+        outline: none;
+      }
+      textarea {
+        resize: vertical;
+        min-height: 70px;
+      }
+      input:focus,
+      select:focus,
+      textarea:focus {
+        border-color: var(--orange);
+      }
+      button {
+        border: 0;
+        cursor: pointer;
+        border-radius: 10px;
+        padding: 10px 14px;
+        color: #1b1309;
+        background: var(--orange);
+        font-weight: 700;
+        font-size: 13px;
+      }
+      button.secondary {
+        color: var(--white);
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid var(--line);
+      }
+      button.green {
+        color: #07140b;
+        background: var(--green);
+      }
+      button.danger {
+        color: #fff;
+        background: #a93842;
+      }
+      button.small {
+        padding: 6px 10px;
+        font-size: 12px;
+      }
+      button:disabled {
+        opacity: 0.45;
+        cursor: not-allowed;
+      }
+      .form-actions {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-top: 14px;
+        flex-wrap: wrap;
+      }
+      .notice {
+        min-height: 20px;
+        color: var(--muted);
+        font-size: 13px;
+      }
+      .notice.error {
+        color: var(--red);
+      }
+      .notice.ok {
+        color: var(--green);
+      }
+      .hidden {
+        display: none !important;
+      }
+      .dashboard-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: end;
+        gap: 20px;
+        flex-wrap: wrap;
+      }
+      .metrics {
+        display: grid;
+        grid-template-columns: repeat(6, 1fr);
+        gap: 12px;
+        margin: 22px 0;
+      }
+      .metric {
+        padding: 14px;
+      }
+      .metric small {
+        display: block;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        font-size: 10px;
+      }
+      .metric strong {
+        display: block;
+        font-size: 26px;
+        margin-top: 6px;
+      }
+      .tabs {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin: 22px 0 18px;
+        border-bottom: 1px solid var(--line);
+        padding-bottom: 14px;
+      }
+      .tab-btn {
+        background: rgba(255, 255, 255, 0.06);
+        color: var(--muted);
+        border: 1px solid var(--line);
+      }
+      .tab-btn.active {
+        background: var(--orange);
+        color: #1b1309;
+      }
+      .tabpanel {
+        display: none;
+      }
+      .tabpanel.active {
+        display: block;
+      }
+      .grid2 {
+        display: grid;
+        grid-template-columns: 1.2fr 0.8fr;
+        gap: 16px;
+        align-items: start;
+      }
+      .panel {
+        padding: 18px;
+      }
+      .panel + .panel {
+        margin-top: 16px;
+      }
+      .panel-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 12px;
+        flex-wrap: wrap;
+      }
+      .sub {
+        color: var(--muted);
+        font-size: 13px;
+      }
+      .rows {
+        display: grid;
+        gap: 9px;
+        max-height: 520px;
+        overflow: auto;
+        padding-right: 4px;
+      }
+      .row {
+        padding: 12px;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.035);
+      }
+      .row-top {
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+      .row small {
+        display: block;
+        color: var(--muted);
+        margin-top: 6px;
+        line-height: 1.45;
+      }
+      .row-actions {
+        display: flex;
+        gap: 6px;
+        flex-wrap: wrap;
+        margin-top: 8px;
+      }
+      .pill {
+        display: inline-flex;
+        border-radius: 999px;
+        padding: 4px 9px;
+        font-size: 11px;
+        background: rgba(54, 189, 107, 0.14);
+        color: #7ceba1;
+        white-space: nowrap;
+      }
+      .pill.warn {
+        color: #ffd18b;
+        background: rgba(255, 173, 61, 0.13);
+      }
+      .pill.off {
+        color: #ff9a9a;
+        background: rgba(255, 107, 107, 0.13);
+      }
+      .pill.global {
+        color: #8ecbff;
+        background: rgba(59, 130, 246, 0.16);
+      }
+      .petition-preview {
+        margin-top: 10px;
+        padding: 12px;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        background: rgba(0, 0, 0, 0.25);
+      }
+      .petition-preview .ptag {
+        font-size: 10px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: #ffd18b;
+      }
+      .petition-preview strong {
+        display: block;
+        margin: 6px 0 4px;
+        font-size: 15px;
+      }
+      .petition-preview p {
+        color: var(--muted);
+        font-size: 13px;
+        line-height: 1.5;
+        margin: 0;
+      }
+      .petition-preview small {
+        color: #8b8378;
+        margin-top: 6px;
+        display: block;
+      }
+      .empty {
+        padding: 16px 0;
+        color: var(--muted);
+      }
+      .field-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+      }
+      .footer-note {
+        margin-top: 22px;
+        padding: 14px;
+        color: var(--muted);
+        font-size: 12px;
+        border-left: 3px solid var(--orange);
+        background: rgba(255, 173, 61, 0.06);
+      }
+      .chip-row {
+        display: flex;
+        gap: 6px;
+        flex-wrap: wrap;
+      }
+      .toggle-inline {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 12px;
+        color: var(--muted);
+      }
+      .toggle-inline input {
+        width: auto;
+      }
+      @media (max-width: 900px) {
+        .metrics {
+          grid-template-columns: repeat(3, 1fr);
+        }
+        .grid2,
+        .field-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="topline"></div>
+    <header>
+      <nav>
+        <a class="brand" href="/index.html">Meme<span>Mantri</span> Admin</a>
+        <div class="navlinks">
+          <a href="/index.html">Public site</a><a href="/adda.html">Meme Adda</a
+          ><span id="whoami" class="pill hidden"></span
+          ><button id="logoutBtn" class="secondary hidden">Logout</button>
+        </div>
+      </nav>
+    </header>
+    <main class="shell">
+      <section id="loginView">
+        <div class="eyebrow">Restricted operations area</div>
+        <h1>
+          Admin<br /><span style="color: var(--green)">Control Room</span>
+        </h1>
+        <p>
+          Memes, ministries, ticker, MOTD, radio, VoiceMantri, chat moderation,
+          petitions, users aur settings — sab ek jagah se.
+        </p>
+        <form id="loginForm" class="card login">
+          <h2>Admin Login</h2>
+          <label for="username">Username</label
+          ><input
+            id="username"
+            autocomplete="username"
+            required
+            placeholder="Admin username"
+          />
+          <label for="password">Password</label
+          ><input
+            id="password"
+            type="password"
+            autocomplete="current-password"
+            required
+            placeholder="Admin password"
+          />
+          <div class="form-actions">
+            <button type="submit">Enter Dashboard</button>
+          </div>
+          <p id="loginMsg" class="notice" role="status"></p>
+        </form>
+      </section>
+
+      <section id="dashboardView" class="hidden">
+        <div class="dashboard-head">
+          <div>
+            <div class="eyebrow">MemeMantri control room</div>
+            <h1>Admin <span style="color: var(--green)">Dashboard</span></h1>
+            <p id="welcomeText">Protected dashboard</p>
+          </div>
+          <button id="refreshBtn" class="secondary">↻ Refresh</button>
+        </div>
+
+        <div class="metrics">
+          <div class="card metric">
+            <small>Server</small><strong id="serverMetric">—</strong>
+          </div>
+          <div class="card metric">
+            <small>Published memes</small><strong id="memesMetric">—</strong>
+          </div>
+          <div class="card metric">
+            <small>Pending petitions</small
+            ><strong id="petitionsMetric">—</strong>
+          </div>
+          <div class="card metric">
+            <small>Ministries</small><strong id="ministriesMetric">—</strong>
+          </div>
+          <div class="card metric">
+            <small>Live channels</small><strong id="channelsMetric">—</strong>
+          </div>
+          <div class="card metric">
+            <small>IP bans</small><strong id="ipbansMetric">—</strong>
+          </div>
+        </div>
+
+        <div class="tabs">
+          <button class="tab-btn active" data-tab="contest">
+            🏆 VoiceMantri
+          </button>
+          <button class="tab-btn" data-tab="memes">🖼 Memes</button>
+          <button class="tab-btn" data-tab="petitions">📮 Petitions</button>
+          <button class="tab-btn" data-tab="ministries">🏛 Ministries</button>
+          <button class="tab-btn" data-tab="content">📝 Ticker & MOTD</button>
+          <button class="tab-btn" data-tab="chat">💬 Chat & Moderation</button>
+          <button class="tab-btn" data-tab="users">🛡 Admin Users</button>
+          <button class="tab-btn" data-tab="settings">⚙️ Site Settings</button>
+          <button class="tab-btn" data-tab="activity">📜 Activity Log</button>
+        </div>
+
+        <!-- VoiceMantri contest -->
+        <div class="tabpanel active" id="tab-contest">
+          <div class="grid2">
+            <div>
+              <section class="card panel">
+                <div class="panel-head">
+                  <div>
+                    <h2>VoiceMantri Control</h2>
+                    <div class="sub">Current 24-hour contest.</div>
+                  </div>
+                  <span id="contestPill" class="pill">Loading</span>
+                </div>
+                <div id="contestRows" class="rows"></div>
+                <div class="form-actions">
+                  <button id="settleBtn" class="danger">
+                    Settle Current Contest
+                  </button>
+                  <button id="newContestBtn" class="green">
+                    Start New Contest
+                  </button>
+                  <input
+                    id="extendHours"
+                    type="number"
+                    min="1"
+                    max="72"
+                    value="24"
+                    style="width: 90px"
+                  />
+                  <button id="extendBtn" class="secondary">Extend (hrs)</button>
+                </div>
+                <p id="contestMsg" class="notice" role="status"></p>
+              </section>
+            </div>
+            <div>
+              <section class="card panel">
+                <div class="panel-head">
+                  <div>
+                    <h2>Retired VoiceMantri</h2>
+                    <div class="sub">Past winners.</div>
+                  </div>
+                </div>
+                <div id="historyRows" class="rows"></div>
+              </section>
+            </div>
+          </div>
+        </div>
+
+        <!-- Memes -->
+        <div class="tabpanel" id="tab-memes">
+          <div class="grid2">
+            <section class="card panel">
+              <div class="panel-head">
+                <h2>Meme Feed</h2>
+                <span id="memeCount" class="sub"></span>
+              </div>
+              <div id="memeRows" class="rows"></div>
+            </section>
+            <section class="card panel">
+              <h2 id="memeFormTitle">Add New Meme</h2>
+              <label>Title</label
+              ><input id="memeTitle" placeholder="Meme title" />
+              <label>Category (ministry key)</label
+              ><input
+                id="memeCategory"
+                placeholder="e.g. funny, hindi, cricket"
+              />
+              <label>Creator handle</label
+              ><input id="memeCreator" placeholder="@handle" />
+              <label>Meme text</label
+              ><textarea id="memeText" placeholder="Meme text..."></textarea>
+              <div class="chip-row" style="margin-top: 10px">
+                <label class="toggle-inline"
+                  ><input type="checkbox" id="memeFeatured" /> Featured</label
+                >
+                <label class="toggle-inline"
+                  ><input type="checkbox" id="memeRadio" checked /> Radio
+                  enabled</label
+                >
+              </div>
+              <div class="form-actions">
+                <button id="memeSaveBtn">Save Meme</button>
+                <button id="memeCancelBtn" class="secondary hidden">
+                  Cancel Edit
+                </button>
+              </div>
+              <p id="memeMsg" class="notice"></p>
+            </section>
+          </div>
+        </div>
+
+        <!-- Petitions -->
+        <div class="tabpanel" id="tab-petitions">
+          <section class="card panel">
+            <div class="panel-head">
+              <h2>User Meme Petitions</h2>
+              <div class="sub">
+                Public site se aaye submissions — approve karne par ye seedha
+                Meme Feed me chala jaata hai.
+              </div>
+            </div>
+            <div id="petitionRows" class="rows"></div>
+            <p id="petitionMsg" class="notice"></p>
+          </section>
+        </div>
+
+        <!-- Ministries -->
+        <div class="tabpanel" id="tab-ministries">
+          <div class="grid2">
+            <section class="card panel">
+              <div class="panel-head"><h2>Ministries / Categories</h2></div>
+              <div id="ministryRows" class="rows"></div>
+            </section>
+            <section class="card panel">
+              <h2>Add Ministry</h2>
+              <label>Key (unique, no spaces)</label
+              ><input id="minKey" placeholder="e.g. sports" />
+              <label>Display Name</label
+              ><input id="minName" placeholder="e.g. Sports Mantralaya" />
+              <label>Emoji</label><input id="minEmoji" placeholder="🏆" />
+              <div class="form-actions">
+                <button id="minSaveBtn">Add Ministry</button>
+              </div>
+              <p id="minMsg" class="notice"></p>
+            </section>
+          </div>
+        </div>
+
+        <!-- Ticker & MOTD -->
+        <div class="tabpanel" id="tab-content">
+          <div class="grid2">
+            <section class="card panel">
+              <div class="panel-head"><h2>Breaking Ticker</h2></div>
+              <div class="form-actions">
+                <input
+                  id="tickerText"
+                  placeholder="Naya ticker line likho..."
+                /><button id="tickerSaveBtn">Add</button>
+              </div>
+              <p id="tickerMsg" class="notice"></p>
+              <div id="tickerRows" class="rows" style="margin-top: 12px"></div>
+            </section>
+            <section class="card panel">
+              <div class="panel-head">
+                <h2>Meme Of The Day</h2>
+                <div class="sub">
+                  Ek specific meme pin karo, ya khaali chhodo (auto-rotate).
+                </div>
+              </div>
+              <label>Pinned Meme ID</label
+              ><input
+                id="motdMemeId"
+                placeholder="Meme ID (khaali = auto rotate)"
+              />
+              <div class="form-actions">
+                <button id="motdSaveBtn">Save MOTD</button
+                ><button id="motdClearBtn" class="secondary">
+                  Clear (auto-rotate)
+                </button>
+              </div>
+              <p id="motdMsg" class="notice"></p>
+            </section>
+          </div>
+        </div>
+
+        <!-- Chat / moderation -->
+        <div class="tabpanel" id="tab-chat">
+          <div class="grid2">
+            <div>
+              <section class="card panel">
+                <div class="panel-head">
+                  <h2>Meme Channels</h2>
+                  <div class="sub">Live in-memory group rooms.</div>
+                </div>
+                <div id="channelRows" class="rows"></div>
+              </section>
+              <section class="card panel">
+                <div class="panel-head"><h2>Banned Words Filter</h2></div>
+                <div class="form-actions">
+                  <input
+                    id="wordInput"
+                    placeholder="Banned word add karo"
+                  /><button id="wordSaveBtn">Add</button>
+                </div>
+                <div id="wordRows" class="rows" style="margin-top: 12px"></div>
+              </section>
+            </div>
+            <div>
+              <section class="card panel">
+                <div class="panel-head"><h2>IP Bans</h2></div>
+                <label>IP address</label
+                ><input id="banIp" placeholder="e.g. 203.0.113.7" />
+                <label>Reason</label
+                ><input id="banReason" placeholder="Reason (optional)" />
+                <div class="form-actions">
+                  <button id="banSaveBtn" class="danger">Ban IP</button>
+                </div>
+                <div id="ipBanRows" class="rows" style="margin-top: 12px"></div>
+                <p id="chatMsg" class="notice"></p>
+              </section>
+              <section class="card panel" style="margin-top: 18px">
+                <div class="panel-head">
+                  <h2>IP Warnings</h2>
+                  <span class="sub">Warned IPs keep full access — enough strikes auto-escalate to a full ban.</span>
+                </div>
+                <label>IP address</label
+                ><input id="warnIp" placeholder="e.g. 203.0.113.7" />
+                <label>Reason</label
+                ><input id="warnReason" placeholder="Reason (optional)" />
+                <div class="form-actions">
+                  <button id="warnSaveBtn">Warn IP</button>
+                </div>
+                <div id="ipWarningRows" class="rows" style="margin-top: 12px"></div>
+                <p id="warnMsg" class="notice"></p>
+              </section>
+              <section class="card panel" style="margin-top: 18px">
+                <div class="panel-head"><h2>Meme Adda Reports</h2></div>
+                <div id="addaReportRows" class="rows" style="margin-top: 12px"></div>
+              </section>
+            </div>
+          </div>
+        </div>
+
+        <!-- Admin users -->
+        <div class="tabpanel" id="tab-users">
+          <section class="card panel">
+            <div class="panel-head">
+              <h2>Admin Users & Roles</h2>
+              <div class="sub" id="usersSub">
+                Sirf super-admin naye admin/moderator bana sakta hai.
+              </div>
+            </div>
+            <div id="adminAddForm" class="field-grid hidden">
+              <input id="newAdminUser" placeholder="Username" />
+              <input
+                id="newAdminPass"
+                placeholder="Password (min 6 chars)"
+                type="password"
+              />
+              <select id="newAdminRole">
+                <option value="moderator">Moderator</option>
+                <option value="admin">Admin</option>
+              </select>
+              <button id="newAdminBtn">Create Admin User</button>
+            </div>
+            <div id="adminUserRows" class="rows" style="margin-top: 12px"></div>
+            <p id="usersMsg" class="notice"></p>
+          </section>
+        </div>
+
+        <!-- Site settings -->
+        <div class="tabpanel" id="tab-settings">
+          <section class="card panel">
+            <h2>Site Settings</h2>
+            <div class="field-grid">
+              <div><label>Site Title</label><input id="siteTitle" /></div>
+              <div><label>Tagline</label><input id="siteTagline" /></div>
+            </div>
+            <label class="toggle-inline" style="margin-top: 14px"
+              ><input type="checkbox" id="maintenanceMode" /> Maintenance mode
+              ON (site visitors ko band dikhega)</label
+            >
+            <label style="margin-top: 10px">Maintenance message</label
+            ><textarea id="maintenanceMessage"></textarea>
+            <div class="form-actions">
+              <button id="settingsSaveBtn">Save Settings</button>
+              <button id="backupBtn" class="secondary">
+                ⬇ Download DB Backup (super-admin)
+              </button>
+            </div>
+            <p id="settingsMsg" class="notice"></p>
+          </section>
+        </div>
+
+        <!-- Activity log -->
+        <div class="tabpanel" id="tab-activity">
+          <section class="card panel">
+            <div class="panel-head">
+              <h2>Activity Log</h2>
+              <div class="sub">Last 200 admin actions.</div>
+            </div>
+            <div id="activityRows" class="rows"></div>
+          </section>
+        </div>
+
+        <div class="footer-note">
+          Production mein strong admin password, HTTPS, persistent disk aur
+          server-side environment variables use karo. Password ko HTML ya
+          JavaScript mein kabhi mat rakhna.
+        </div>
+      </section>
+    </main>
+    <script src="admin.js"></script>
+  </body>
+</html>

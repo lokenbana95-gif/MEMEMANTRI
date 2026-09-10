@@ -1,0 +1,647 @@
+<!doctype html>
+<html lang="hi">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Meme Adda — Live Online Chat, Debate & Channels</title>
+    <meta
+      name="description"
+      content="MemeMantri live random chat, fixed-topic debates and group Meme Channels."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Grotesk:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="mm1.css" />
+    <style>
+      .adda-page {
+        min-height: 100vh;
+        background:
+          radial-gradient(
+            circle at 20% 10%,
+            rgba(255, 153, 51, 0.18),
+            transparent 30%
+          ),
+          radial-gradient(
+            circle at 80% 15%,
+            rgba(19, 136, 8, 0.16),
+            transparent 28%
+          ),
+          #101010;
+      }
+      .adda-hero {
+        padding: 76px 0 34px;
+        text-align: center;
+      }
+      .adda-hero h1 {
+        font-size: clamp(42px, 7vw, 86px);
+        margin: 18px 0 8px;
+      }
+      .adda-hero p {
+        color: var(--muted);
+        max-width: 760px;
+        margin: 0 auto;
+      }
+      .adda-shell {
+        max-width: 1120px;
+        margin: 0 auto;
+        padding: 0 20px 70px;
+      }
+      .adda-toolbar {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        margin-bottom: 18px;
+      }
+      .adda-status {
+        padding: 14px 16px;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 14px;
+        background: rgba(0, 0, 0, 0.22);
+        color: #f6f0e8;
+      }
+      .adda-status strong {
+        color: #ffb347;
+      }
+      .adda-modes {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 14px;
+        margin: 18px 0;
+      }
+      .adda-mode {
+        text-align: left;
+        cursor: pointer;
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        color: #fff;
+        padding: 18px;
+        border-radius: 16px;
+        background: rgba(255, 255, 255, 0.04);
+        transition:
+          transform 0.2s,
+          border-color 0.2s,
+          background 0.2s;
+      }
+      .adda-mode:hover,
+      .adda-mode.active {
+        transform: translateY(-2px);
+        border-color: #ffbd4a;
+        background: rgba(255, 189, 74, 0.1);
+      }
+      .adda-mode b {
+        display: block;
+        font-family: "Bebas Neue", sans-serif;
+        letter-spacing: 1px;
+        font-size: 24px;
+      }
+      .adda-mode span {
+        display: block;
+        color: var(--muted);
+        margin-top: 5px;
+        font-size: 13px;
+      }
+      .adda-layout {
+        display: grid;
+        grid-template-columns: 1.45fr 0.75fr;
+        gap: 18px;
+        align-items: start;
+      }
+      .adda-card {
+        padding: 18px;
+      }
+      #addaMessages {
+        height: 420px;
+        overflow: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 9px;
+        padding: 8px;
+        background: rgba(0, 0, 0, 0.22);
+        border-radius: 14px;
+      }
+      .adda-msg {
+        max-width: 84%;
+        padding: 10px 13px;
+        border-radius: 14px;
+        line-height: 1.42;
+        white-space: pre-wrap;
+      }
+      .adda-msg.me {
+        align-self: flex-end;
+        background: #ffbd4a;
+        color: #24170b;
+        border-bottom-right-radius: 3px;
+      }
+      .adda-msg.them {
+        align-self: flex-start;
+        background: #2a7e4f;
+        color: #fff;
+        border-bottom-left-radius: 3px;
+      }
+      .adda-msg.system {
+        align-self: center;
+        max-width: 95%;
+        color: var(--muted);
+        font-size: 13px;
+        text-align: center;
+      }
+      .adda-input-row {
+        display: flex;
+        gap: 9px;
+        margin-top: 10px;
+      }
+      .adda-input-row input {
+        flex: 1;
+        min-width: 0;
+      }
+      .adda-side h3 {
+        margin-top: 0;
+      }
+      .adda-side label {
+        display: block;
+        color: var(--muted);
+        font-size: 13px;
+        margin: 13px 0 6px;
+      }
+      .adda-side select,
+      .adda-side input,
+      .adda-side textarea {
+        width: 100%;
+        box-sizing: border-box;
+      }
+      .adda-invite-box,
+      .adda-panel {
+        margin-top: 16px;
+        padding: 14px;
+        border-radius: 14px;
+        border: 1px dashed rgba(255, 189, 74, 0.55);
+        background: rgba(255, 189, 74, 0.06);
+      }
+      .adda-panel {
+        border-style: solid;
+        border-color: rgba(255, 255, 255, 0.12);
+        background: rgba(0, 0, 0, 0.18);
+      }
+      .adda-hidden {
+        display: none !important;
+      }
+      .channel-list {
+        display: grid;
+        gap: 8px;
+        margin-top: 12px;
+        max-height: 240px;
+        overflow: auto;
+      }
+      .channel-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        padding: 10px;
+        border-radius: 10px;
+        background: rgba(255, 255, 255, 0.05);
+      }
+      .channel-row small {
+        color: var(--muted);
+        display: block;
+      }
+      @media (max-width: 820px) {
+        .adda-modes,
+        .adda-layout {
+          grid-template-columns: 1fr;
+        }
+        #addaMessages {
+          height: 360px;
+        }
+      }
+      #callIconBtn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        border: none;
+        cursor: pointer;
+        padding: 10px 16px;
+        border-radius: 999px;
+        background: #2a7e4f;
+        color: #fff;
+        font-weight: 600;
+        animation: callPulse 1.6s infinite;
+      }
+      #callIconBtn:hover {
+        background: #33965c;
+      }
+      @keyframes callPulse {
+        0%,
+        100% {
+          box-shadow: 0 0 0 0 rgba(42, 126, 79, 0.55);
+        }
+        50% {
+          box-shadow: 0 0 0 9px rgba(42, 126, 79, 0);
+        }
+      }
+      .call-box {
+        margin-top: 14px;
+        padding: 14px;
+        border-radius: 14px;
+        border: 1px solid rgba(255, 189, 74, 0.5);
+        background: rgba(255, 189, 74, 0.08);
+      }
+      .call-box strong {
+        display: block;
+        margin-bottom: 8px;
+      }
+      .call-actions {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+      .in-call-bar {
+        margin-top: 14px;
+        padding: 14px;
+        border-radius: 14px;
+        border: 1px solid rgba(42, 126, 79, 0.55);
+        background: rgba(42, 126, 79, 0.12);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+      .in-call-bar .call-timer {
+        font-family: "Bebas Neue", sans-serif;
+        letter-spacing: 1px;
+        font-size: 20px;
+        color: #ffb347;
+      }
+    </style>
+  </head>
+  <body class="adda-page">
+    <div class="tricolor-bar"></div>
+    <header>
+      <div class="wrap">
+        <nav>
+          <a class="brand" href="index.html"
+            >Meme<span class="text-tricolor">Mantri</span></a
+          >
+          <div class="links">
+            <a class="nav-link" href="index.html">🏛 Meme Parliament</a
+            ><a class="nav-link" href="global.html">🌍 Global Mantri</a>
+          </div>
+          <button
+            class="hamburger-btn"
+            id="hamburgerBtn"
+            aria-label="Menu kholo"
+          >
+            ☰
+          </button>
+        </nav>
+      </div>
+      <div class="mobile-backdrop" id="mobileBackdrop"></div>
+      <div class="mobile-drawer" id="mobileDrawer">
+        <div class="mobile-drawer-head">
+          <span class="brand"
+            >Meme<span class="text-tricolor">Mantri</span></span
+          >
+          <button
+            class="mobile-drawer-close"
+            id="mobileDrawerClose"
+            aria-label="Band karo"
+          >
+            ✕
+          </button>
+        </div>
+        <a href="index.html">🏛 Meme Parliament</a>
+        <a href="global.html">🌍 Global Memes</a>
+      </div>
+    </header>
+    <main>
+      <section class="adda-hero">
+        <div class="adda-shell">
+          <span class="badge glass"
+            >MemeMantri · Live Online Indian Meme Adda</span
+          >
+          <h1>💬 Meme <span class="text-tricolor">Adda</span></h1>
+          <p>
+            Page khulte hi random chat start hoti hai. Baad mein fixed-topic
+            debate ya apna Meme Channel choose karke community se connect ho
+            jao. Allow Notifications
+          </p>
+        </div>
+      </section>
+
+      <section class="adda-shell">
+        <div class="adda-toolbar">
+          <div id="addaStatus" class="adda-status">
+            🔌 <strong>Connecting…</strong> · Aapko automatically kisi meme
+            citizen se connect kiya ja raha hai.
+          </div>
+          <div style="display: flex; gap: 9px; flex-wrap: wrap">
+            <button id="callIconBtn" class="adda-hidden">📞 Call Karo</button
+            ><button id="reportPartnerBtn" class="btn btn-ghost adda-hidden">
+              🚩 Report</button
+            ><button id="blockPartnerBtn" class="btn btn-ghost adda-hidden">
+              🚫 Block</button
+            ><button id="notifyBtn" class="btn btn-ghost">
+              🔔 Notifications On</button
+            ><button id="leaveBtn" class="btn btn-ghost adda-hidden">
+              🚪 Leave
+            </button>
+          </div>
+        </div>
+
+        <div class="adda-modes" role="group" aria-label="Meme Adda modes">
+          <button class="adda-mode active" data-mode="chat">
+            <b>🎲 Find Someone To Chat</b
+            ><span
+              >Page open hote hi random live chat automatically start.</span
+            >
+          </button>
+          <button class="adda-mode" data-mode="debate">
+            <b>⚖️ Start Debate</b
+            ><span
+              >Politics, cricket, movies/series, behavior, technology/AI,
+              village/city life ya custom topic.</span
+            >
+          </button>
+          <button class="adda-mode" data-mode="channel">
+            <b>📡 Meme Channels</b
+            ><span
+              >Apna group channel banao, join karo aur community chat
+              chalao.</span
+            >
+          </button>
+        </div>
+
+        <div class="adda-layout">
+          <section class="glass card adda-card">
+            <div id="addaMessages">
+              <div class="adda-msg system">
+                Meme Adda connect ho raha hai… page open rakhna. 📞60-second
+                Meme Chat ke baad Voice call Connect unlock hoga.
+              </div>
+            </div>
+
+            <div id="incomingCallBox" class="call-box adda-hidden">
+              <strong
+                >📞 <span id="callerName">Partner</span> aapko call kar raha
+                hai…</strong
+              >
+              <div class="call-actions">
+                <button id="callAcceptBtn" class="btn btn-primary">
+                  ✅ Accept
+                </button>
+                <button id="callRejectBtn" class="btn btn-ghost">
+                  ✕ Reject
+                </button>
+              </div>
+            </div>
+
+            <div id="outgoingCallBox" class="call-box adda-hidden">
+              <strong
+                >📞 Call request bheja gaya… partner ke accept karne ka wait ho
+                raha hai.</strong
+              >
+              <div class="call-actions">
+                <button id="callCancelBtn" class="btn btn-ghost">
+                  ✕ Cancel
+                </button>
+              </div>
+            </div>
+
+            <div id="inCallBar" class="in-call-bar adda-hidden">
+              <div>
+                🎙️ Call chal rahi hai ·
+                <span id="callTimer" class="call-timer">00:00</span>
+              </div>
+              <div class="call-actions">
+                <button id="muteBtn" class="btn btn-ghost">🎙️ Mute</button>
+                <button id="endCallBtn" class="btn btn-ghost">
+                  📴 End Call
+                </button>
+              </div>
+            </div>
+            <audio id="remoteAudio" autoplay></audio>
+
+            <div class="adda-input-row">
+              <input
+                id="messageInput"
+                type="text"
+                maxlength="500"
+                placeholder="Apna thought, roast ya debate point likho…"
+              /><button id="sendBtn" class="btn btn-primary">Send</button>
+            </div>
+          </section>
+
+          <aside class="glass card adda-card adda-side">
+            <h3>🧭 Adda Modes</h3>
+            <p id="modeHint" class="sub">
+              Random chat automatically start ho chuki hai.
+            </p>
+
+            <div id="debatePanel" class="adda-panel adda-hidden">
+              <strong>⚖️ Debate topic choose karo</strong>
+              <label for="debateTopic">Fixed topic</label>
+              <select id="debateTopic">
+                <option value="politics">Politics</option>
+                <option value="cricket">Cricket</option>
+                <option value="movies-series">Movies / Series</option>
+                <option value="behavior">Human Behavior</option>
+                <option value="technology-ai">Technology / AI</option>
+                <option value="village-city-life">Village / City Life</option>
+                <option value="custom">Custom topic</option>
+              </select>
+              <input
+                id="customTopic"
+                class="adda-hidden"
+                type="text"
+                maxlength="160"
+                placeholder="Apna debate topic likho…"
+              />
+              <button
+                id="debateStartBtn"
+                class="btn btn-primary"
+                style="width: 100%; margin-top: 12px"
+              >
+                ⚖️ Find Debate Partner
+              </button>
+            </div>
+
+            <div id="channelPanel" class="adda-panel adda-hidden">
+              <strong>📡 Meme Channels</strong>
+              <p class="sub">
+                Public group channel banao ya kisi existing channel mein join ho
+                jao.
+              </p>
+              <input
+                id="channelName"
+                type="text"
+                maxlength="50"
+                placeholder="New channel name e.g. Desi Cricket Club"
+              />
+              <button
+                id="createChannelBtn"
+                class="btn btn-primary"
+                style="width: 100%; margin-top: 9px"
+              >
+                ＋ Create Channel
+              </button>
+              <button
+                id="refreshChannelsBtn"
+                class="btn btn-ghost"
+                style="width: 100%; margin-top: 9px"
+              >
+                ↻ Refresh Channels
+              </button>
+              <div id="channelList" class="channel-list">
+                <p class="sub">Channels load ho rahe hain…</p>
+              </div>
+              <div
+                id="currentChannel"
+                class="adda-hidden"
+                style="margin-top: 12px"
+              >
+                <strong id="currentChannelName"></strong
+                ><button
+                  id="leaveChannelBtn"
+                  class="btn btn-ghost"
+                  style="width: 100%; margin-top: 9px"
+                >
+                  Leave Channel
+                </button>
+              </div>
+            </div>
+
+            <div class="adda-invite-box">
+              <strong>🔔 Online Invite</strong>
+              <p id="inviteHint" class="sub">
+                Page load par notification permission ka option diya gaya hai.
+                Partner invite yahin accept/reject hoga.
+              </p>
+              <div style="display: flex; gap: 8px; flex-wrap: wrap">
+                <button
+                  id="acceptInviteBtn"
+                  class="btn btn-primary adda-hidden"
+                >
+                  ✅ Accept</button
+                ><button id="rejectInviteBtn" class="btn btn-ghost adda-hidden">
+                  ✕ Reject
+                </button>
+              </div>
+            </div>
+            <button
+              id="searchAgainBtn"
+              class="btn btn-green"
+              style="width: 100%; margin-top: 14px"
+            >
+              🎲 Find Another Person
+            </button>
+          </aside>
+        </div>
+      </section>
+    </main>
+
+    <div
+      class="report-modal-backdrop"
+      id="addaReportBackdrop"
+      hidden
+    >
+      <div
+        class="report-modal glass"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="addaReportModalTitle"
+      >
+        <button
+          class="report-modal-close"
+          id="addaReportModalClose"
+          aria-label="Band karo"
+        >
+          ✕
+        </button>
+        <span class="tag">⚑ REPORT USER</span>
+        <h3 id="addaReportModalTitle">Is partner ke saath kya problem hai?</h3>
+        <form id="addaReportForm">
+          <label
+            >Reason<select name="reason" id="addaReportReason">
+              <option value="harassment">Harassment / abuse</option>
+              <option value="offensive">Offensive content</option>
+              <option value="spam">Spam</option>
+              <option value="inappropriate-call">Inappropriate on voice call</option>
+              <option value="other">Other</option>
+            </select></label
+          >
+          <label id="addaReportOtherWrap" hidden
+            >Apni problem batao<textarea
+              name="otherReason"
+              id="addaReportOtherText"
+              maxlength="300"
+              placeholder="Yahan likho ki exactly kya problem hui..."
+            ></textarea
+          ></label>
+          <div class="form-actions">
+            <button class="btn btn-primary" type="submit" id="addaReportSubmitBtn">
+              🚩 Submit Report
+            </button>
+            <button class="btn btn-ghost" type="button" id="addaReportCancelBtn">
+              Cancel
+            </button>
+          </div>
+          <p class="form-status" id="addaReportStatus" role="status"></p>
+        </form>
+      </div>
+    </div>
+
+    <div class="report-modal-backdrop" id="addaBlockBackdrop" hidden>
+      <div
+        class="report-modal glass"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="addaBlockModalTitle"
+      >
+        <button
+          class="report-modal-close"
+          id="addaBlockModalClose"
+          aria-label="Band karo"
+        >
+          ✕
+        </button>
+        <span class="tag">🚫 BLOCK USER</span>
+        <h3 id="addaBlockModalTitle">Is partner ke saath kya karna chahte ho?</h3>
+        <p class="form-status" style="color: var(--muted)">
+          Block karne par ye user dobara kabhi match nahi hoga. Agar sirf
+          galat behaviour report karna hai toh Report chuno.
+        </p>
+        <div class="form-actions">
+          <button class="btn btn-primary" type="button" id="addaBlockConfirmBtn">
+            🚫 Haan, Block karo
+          </button>
+          <button class="btn btn-ghost" type="button" id="addaBlockReportInsteadBtn">
+            🚩 Report karo
+          </button>
+          <button class="btn btn-ghost" type="button" id="addaBlockCancelBtn">
+            Cancel
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script src="vendor/socket.io.min.js"></script>
+    <!-- <script
+      src="https://cdn.socket.io/4.7.5/socket.io.min.js"
+      crossorigin="anonymous"
+    ></script> -->
+    <script>
+      window.MEME_CHAT_SERVER_URL =
+        window.MEME_CHAT_SERVER_URL ||
+        (location.protocol === "file:"
+          ? "http://localhost:3000"
+          : location.origin);
+    </script>
+    <script src="adda.js"></script>
+    <script src="nav-toggle.js"></script>
+  </body>
+</html>
