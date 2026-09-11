@@ -1018,12 +1018,8 @@ function openMemeDetail(id) {
       <button class="icon-action${saved ? " active" : ""}" data-save="${escapeHtml(m.id)}" aria-label="Save meme">🔖</button>
       ${String(m.id).startsWith("srv") ? `<button class="icon-action${m.reported ? " reported" : ""}" data-report="${escapeHtml(m.id)}" aria-label="${m.reported ? "Reported — team review karegi" : "Report meme"}"${m.reported ? " disabled" : ""}>${m.reported ? "🚩" : "⚑"}</button>` : ""}
     </div>
-    ${shareIconsHTML(m.id)}
-    <div class="court-box" id="courtBox" data-court-meme="${escapeHtml(m.id)}">
-      <p class="sub">⚖️ Loading Meme Court…</p>
-    </div>`;
+    ${shareIconsHTML(m.id)}`;
   document.getElementById("detailBackdrop").hidden = false;
-  loadMemeCourt(document.getElementById("courtBox"), m.id);
 }
 async function loadMemeCourt(containerEl, id) {
   if (!containerEl || containerEl.dataset.courtMeme !== String(id)) return;
