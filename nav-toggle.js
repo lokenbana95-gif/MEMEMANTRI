@@ -24,6 +24,6 @@
     if (event.key === "Escape") closeDrawer();
   });
   window.addEventListener("resize", () => {
-    if (window.innerWidth > 860) closeDrawer();
+    if (window.innerWidth > 1100) closeDrawer();
   });
 })();
