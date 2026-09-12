@@ -217,7 +217,12 @@ function stopCallTimerUi() {
   state.callStartedAt = null;
 }
 function requestCall() {
-  if (!state.paired || !state.socket?.connected) return;
+  if (!state.paired || !state.socket?.connected) {
+    appendSystem(
+      "📵 Connection abhi stable nahi hai — thoda ruk ke dobara try karo.",
+    );
+    return;
+  }
   state.callAwaiting = true;
   callIconBtn.classList.add("adda-hidden");
   outgoingCallBox.classList.remove("adda-hidden");
@@ -429,6 +434,25 @@ function connectSocket() {
     setStatus(
       `Online server se connect nahi ho pa raha: ${error?.message || "server unavailable"}`,
     );
+  });
+  // Mobile data / weak network connections drop the socket often. Without
+  // this, the UI kept showing "paired"/the call button even though the
+  // connection was actually dead — so tapping "Call Karo" did nothing and
+  // gave zero feedback. Reset everything the moment we go offline.
+  state.socket.on("disconnect", () => {
+    const wasPaired = state.paired;
+    const wasInCall = state.inCall || state.callAwaiting;
+    state.connected = false;
+    state.paired = false;
+    state.searching = false;
+    updateControls();
+    resetCallUi();
+    if (wasInCall) endCall(false);
+    if (wasPaired)
+      appendSystem(
+        "📵 Connection kat gayi. Wapas connect hote hi naya partner search hoga.",
+      );
+    setStatus("Connection kat gayi — reconnect ho raha hai…");
   });
   state.socket.io.on("reconnect_attempt", (attempt) =>
     setStatus(`Server reconnect attempt ${attempt}/8…`),
