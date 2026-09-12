@@ -9,7 +9,12 @@ const DEBATE_TOPICS = {
   "technology-ai": "Technology / AI",
   "village-city-life": "Village / City Life",
 };
-const CALL_ICON_DELAY_MS = 60 * 1000;
+// Mobile browsers throttle/pause background-tab JS timers aggressively —
+// if the user switches apps even briefly during this wait, a long timer
+// like 60s often never survives to completion, so the button can feel
+// like it "never" appears on mobile. Keeping this short reduces the odds
+// of that happening.
+const CALL_ICON_DELAY_MS = 20 * 1000;
 const state = {
   mode: "chat",
   socket: null,
@@ -27,6 +32,7 @@ const state = {
   callAwaiting: false,
   callTimerInterval: null,
   callStartedAt: null,
+  callConnectTimeout: null,
   muted: false,
   // Signaling messages (offer/candidates) that arrive from the partner
   // before our own RTCPeerConnection has finished being created (e.g. the
@@ -216,6 +222,12 @@ function stopCallTimerUi() {
   }
   state.callStartedAt = null;
 }
+function clearCallConnectTimeout() {
+  if (state.callConnectTimeout) {
+    clearTimeout(state.callConnectTimeout);
+    state.callConnectTimeout = null;
+  }
+}
 function requestCall() {
   if (!state.paired || !state.socket?.connected) {
     appendSystem(
@@ -290,15 +302,37 @@ async function startCall(initiator) {
   state.pc.onconnectionstatechange = () => {
     if (state.pc?.connectionState === "connected" && !state.inCall) {
       state.inCall = true;
+      clearCallConnectTimeout();
       inCallBar.classList.remove("adda-hidden");
       startCallTimerUi();
       appendSystem("📞 Call connected.");
     }
     if (
       ["failed", "disconnected", "closed"].includes(state.pc?.connectionState)
-    )
+    ) {
+      // Previously this cleaned up silently if the call never actually
+      // connected (e.g. ICE/TURN couldn't find a working path) — the user
+      // just saw nothing happen at all. Always say something.
+      if (!state.inCall)
+        appendSystem(
+          "📵 Call connect nahi ho payi (network/firewall issue ho sakta hai). Dobara try karo.",
+        );
+      clearCallConnectTimeout();
       endCall(false);
+    }
   };
+  // Some restrictive networks never fire "failed" — ICE just sits stuck in
+  // "checking"/"new" forever with no event at all, so the caller/callee
+  // used to wait indefinitely with zero feedback. Time-box it.
+  clearCallConnectTimeout();
+  state.callConnectTimeout = setTimeout(() => {
+    if (state.pc && !state.inCall) {
+      appendSystem(
+        "📵 Call connect nahi ho payi (30s timeout). Network issue ho sakta hai, dobara try karo.",
+      );
+      endCall(true);
+    }
+  }, 30000);
   // Replay any offer/candidate messages that arrived while we were still
   // waiting on the mic prompt / RTCPeerConnection setup above.
   const queued = state.pendingSignals || [];
@@ -343,6 +377,7 @@ function endCall(notifyServer = true) {
     (state.inCall || state.callAwaiting)
   )
     state.socket.emit("adda:call-end");
+  clearCallConnectTimeout();
   if (state.pc) {
     state.pc.close();
     state.pc = null;
@@ -556,6 +591,13 @@ function connectSocket() {
       callIconBtn.classList.remove("adda-hidden");
   });
   state.socket.on("adda:call-start", ({ initiator }) => startCall(initiator));
+  state.socket.on("adda:call-failed", (data) => {
+    state.callAwaiting = false;
+    hideCallEntryPoints();
+    appendSystem(`📵 ${data?.message || "Call start nahi ho payi."}`);
+    if (state.mode === "chat" && state.paired && !state.inCall)
+      callIconBtn.classList.remove("adda-hidden");
+  });
   state.socket.on("adda:call-signal", handleCallSignal);
   state.socket.on("adda:call-end", () => endCall(false));
   state.socket.on("channel:list", renderChannels);
