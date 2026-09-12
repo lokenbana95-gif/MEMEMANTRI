@@ -3011,14 +3011,24 @@ io.on("connection", (socket) => {
   socket.on("adda:call-request", () => {
     const partnerId = partnerOf.get(socket.id);
     const partner = partnerId && io.sockets.sockets.get(partnerId);
-    if (!partner) return;
+    if (!partner)
+      return socket.emit("adda:call-failed", {
+        message: "Partner ab connected nahi hai.",
+      });
     socket.data.callRequested = true;
     partner.emit("adda:call-request", { fromName: socket.data.displayName });
   });
   socket.on("adda:call-accept", () => {
     const partnerId = partnerOf.get(socket.id);
     const partner = partnerId && io.sockets.sockets.get(partnerId);
-    if (!partner || !partner.data.callRequested) return;
+    if (!partner || !partner.data.callRequested) {
+      // Stale/expired call request (partner already left, reconnected, or
+      // cancelled) — previously this returned silently and the person who
+      // hit Accept saw nothing happen at all.
+      return socket.emit("adda:call-failed", {
+        message: "Ye call ab valid nahi hai — partner disconnect ho gaya tha.",
+      });
+    }
     socket.data.inCall = true;
     partner.data.inCall = true;
     partner.data.callRequested = false;
