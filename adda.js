@@ -28,6 +28,11 @@ const state = {
   callTimerInterval: null,
   callStartedAt: null,
   muted: false,
+  // Signaling messages (offer/candidates) that arrive from the partner
+  // before our own RTCPeerConnection has finished being created (e.g. the
+  // callee is still waiting on the mic-permission prompt). These get
+  // queued and replayed once state.pc exists, instead of being dropped.
+  pendingSignals: null,
 };
 const statusEl = document.getElementById("addaStatus");
 const messagesEl = document.getElementById("addaMessages");
@@ -146,7 +151,38 @@ function resetCallUi() {
 
 // ---------- WebRTC voice call ----------
 async function fetchIceServers() {
-  const fallback = [{ urls: "stun:stun.l.google.com:19302" }];
+  // Public STUN alone frequently fails to establish real audio between two
+  // strangers on different networks (mobile data / CGNAT / symmetric NAT) —
+  // it can look "connected" while no audio ever flows. These free public
+  // TURN relays (Open Relay Project / Metered.ca demo credentials) are used
+  // as a safety net whenever the server hasn't been given its own TURN
+  // account (METERED_DOMAIN / METERED_SECRET_KEY env vars). For reliable,
+  // higher-capacity calling in production, set those env vars on the
+  // server with your own TURN provider — this fallback is best-effort.
+  const fallback = [
+    { urls: "stun:stun.l.google.com:19302" },
+    { urls: "stun:stun.relay.metered.ca:80" },
+    {
+      urls: "turn:global.relay.metered.ca:80",
+      username: "openrelayproject",
+      credential: "openrelayproject",
+    },
+    {
+      urls: "turn:global.relay.metered.ca:80?transport=tcp",
+      username: "openrelayproject",
+      credential: "openrelayproject",
+    },
+    {
+      urls: "turn:global.relay.metered.ca:443",
+      username: "openrelayproject",
+      credential: "openrelayproject",
+    },
+    {
+      urls: "turn:global.relay.metered.ca:443?transport=tcp",
+      username: "openrelayproject",
+      credential: "openrelayproject",
+    },
+  ];
   try {
     const response = await fetch(
       `${SOCKET_SERVER_URL}/api/public/turn-credentials`,
@@ -208,6 +244,10 @@ function rejectIncomingCall() {
 async function startCall(initiator) {
   hideCallEntryPoints();
   state.callAwaiting = false;
+  // Start queuing any offer/candidate messages that arrive from the
+  // partner while we're still waiting on getUserMedia() / building the
+  // peer connection below, so nothing gets silently dropped.
+  state.pendingSignals = [];
   try {
     state.localStream = await navigator.mediaDevices.getUserMedia({
       audio: true,
@@ -215,6 +255,7 @@ async function startCall(initiator) {
     });
   } catch {
     appendSystem("🎙️ Mic permission nahi mili, call start nahi ho saki.");
+    state.pendingSignals = null;
     if (state.socket?.connected) state.socket.emit("adda:call-end");
     return;
   }
@@ -232,6 +273,14 @@ async function startCall(initiator) {
   };
   state.pc.ontrack = (event) => {
     remoteAudio.srcObject = event.streams[0];
+    // Some browsers (notably Safari/iOS) won't honor the `autoplay`
+    // attribute for a srcObject assigned outside a direct user-gesture
+    // call stack. Explicitly kick playback so voice is actually audible.
+    remoteAudio.play().catch(() => {
+      appendSystem(
+        "🔊 Audio play block ho gaya — screen par kahin bhi tap karo.",
+      );
+    });
   };
   state.pc.onconnectionstatechange = () => {
     if (state.pc?.connectionState === "connected" && !state.inCall) {
@@ -245,6 +294,13 @@ async function startCall(initiator) {
     )
       endCall(false);
   };
+  // Replay any offer/candidate messages that arrived while we were still
+  // waiting on the mic prompt / RTCPeerConnection setup above.
+  const queued = state.pendingSignals || [];
+  state.pendingSignals = null;
+  for (const payload of queued) {
+    await handleCallSignal(payload);
+  }
   if (initiator) {
     const offer = await state.pc.createOffer();
     await state.pc.setLocalDescription(offer);
@@ -252,7 +308,14 @@ async function startCall(initiator) {
   }
 }
 async function handleCallSignal(payload) {
-  if (!state.pc || !payload) return;
+  if (!payload) return;
+  if (!state.pc) {
+    // Peer connection isn't ready yet (still awaiting mic permission) —
+    // queue this instead of dropping it, so the call can still connect
+    // once startCall() finishes setting up.
+    if (Array.isArray(state.pendingSignals)) state.pendingSignals.push(payload);
+    return;
+  }
   if (payload.type === "offer") {
     await state.pc.setRemoteDescription(new RTCSessionDescription(payload.sdp));
     const answer = await state.pc.createAnswer();
@@ -284,6 +347,7 @@ function endCall(notifyServer = true) {
     state.localStream = null;
   }
   remoteAudio.srcObject = null;
+  state.pendingSignals = null;
   stopCallTimerUi();
   inCallBar.classList.add("adda-hidden");
   outgoingCallBox.classList.add("adda-hidden");
